@@ -1,1 +1,15 @@
-
+{
+  "name": "feed-me-backend",
+  "version": "1.0.0",
+  "description": "Feed Me takeaway - Stripe payment backend",
+  "main": "stripe-backend-example.js",
+  "scripts": {
+    "start": "node stripe-backend-example.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "stripe": "^16.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  }
+}
