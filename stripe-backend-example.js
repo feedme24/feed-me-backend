@@ -1,9 +1,12 @@
-
 const express = require("express");
+const cors = require("cors");
+const Stripe = require("stripe");
+
 const app = express();
+app.use(cors());
 
 app.get("/", (req, res) => {
-  res.send("Feed Me backend is alive!");
+  res.send("Feed Me backend is alive, with packages loaded!");
 });
 
 const PORT = process.env.PORT || 4000;
