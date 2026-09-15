@@ -1,4 +1,5 @@
-    
+
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const Stripe = require("stripe");
@@ -6,10 +7,36 @@ const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const app = express();
 app.use(cors());
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        req.headers["stripe-signature"],
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.error("Webhook signature check failed:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+      console.log("✅ Payment confirmed for session:", session.id);
+    }
+
+    res.json({ received: true });
+  }
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Feed Me backend is alive, checkout endpoint added!");
+  res.send("Feed Me backend is fully alive!");
 });
 
 app.post("/create-checkout-session", async (req, res) => {
@@ -68,6 +95,5 @@ app.post("/create-checkout-session", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Test server running on port ${PORT}`));      
-
+app.listen(PORT, () => console.log(`Feed Me payment server running on port ${PORT}`));
     
